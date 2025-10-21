@@ -13,6 +13,6 @@ namespace Domain.Interfaces
         List<T> FindAll();
         T Create(T entity);
         T Update(T entity);
-        void Delete(Guid id);
+        void Delete(T entity);
     }
 }

@@ -34,8 +34,13 @@ namespace Infrastructure.Communication
             return JsonSerializer.Deserialize<T>(_reader.ReadLine());
         }
 
+        public T ReadType<T>(object podaci)
+        {
+            return podaci == null ? default(T) : JsonSerializer.Deserialize<T>((JsonElement)podaci);
+        }
+
         ~CommunicationAdapter()
-        { 
+        {
             _stream.Close();
             _reader.Close();
             _writer.Close();

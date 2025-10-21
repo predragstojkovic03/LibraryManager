@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence
 {
-    public class Broker
+    public class MssqlDataSource
     {
         SqlConnection connection;
         SqlTransaction transaction;
 
-        public Broker()
+        public MssqlDataSource()
         {
             connection = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=SeminarskiPS;Integrated Security=True;");
         }
@@ -22,7 +22,7 @@ namespace Infrastructure.Persistence
             connection.Open();
         }
 
-        public SqlCommand CreateCommand()
+        public SqlCommand CreateCommand(SqlTransaction? transaction)
         {
             SqlCommand cmd = new SqlCommand("", connection, transaction);
             return cmd;

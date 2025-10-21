@@ -9,31 +9,31 @@ using Microsoft.Data.SqlClient;
 
 namespace Infrastructure.Persistence.Entities
 {
-    internal class MssqlCustomer : MssqlEntity<Customer>
+    internal class MssqlEmployee : MssqlEntity<Employee>
     {
-        protected override string TableName => "customer";
-
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        public string? Email { get; set; }
-        public string? Phone { get; set; }
+        public string? Password { get; set; }
+        public string? Username { get; set; }
         public Guid LibraryId { get; set; }
 
-        public override string UpdateQuery => $@"update ${TableName}
+        protected override string TableName => "employee";
+        public override string UpdateQuery => $@"update {TableName}
 set first_name={FirstName},
 last_name={LastName},
-email={Email ?? null},
-phone={Phone},
+password={Password},
+username={Username},
 library_id={LibraryId}
 where id={Id}";
 
-        public override string InsertQuery => $@"insert into ${TableName}
-(id, first_name, last_name, email, phone, library_id)
-values ({Id}, {FirstName}, {LastName}, {Email}, {Phone}, {LibraryId})";
+        public override string InsertQuery => $@"insert into {TableName}
+(id, first_name, last_name, password, username, library_id)
+values ({Id}, {FirstName}, {LastName}, {Password}, {Username}, {LibraryId})";
 
-        public override Customer ToDomain()
+
+        public override Employee ToDomain()
         {
-            return new Customer { FirstName = FirstName, LastName = LastName, Email = Email, Phone = Phone };
+            return new Employee { FirstName = FirstName, LastName = LastName, Password = Password, Id = Id, Username = Username };
         }
 
         public override void AssignFromReader(SqlDataReader reader)
@@ -41,8 +41,8 @@ values ({Id}, {FirstName}, {LastName}, {Email}, {Phone}, {LibraryId})";
             Id = Guid.Parse(reader["id"].ToString());
             FirstName = reader["first_name"].ToString();
             LastName = reader["last_name"].ToString();
-            Email = reader["email"].ToString();
-            Phone = reader["phone"].ToString();
+            Password = reader["password"].ToString();
+            Username = reader["username"].ToString();
             LibraryId = Guid.Parse(reader["library_id"].ToString());
         }
     }

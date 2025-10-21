@@ -5,14 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 
 namespace Infrastructure.Persistence.Entities
 {
-    internal class MssqlBook : ISqlEntity<Book>
+    internal class MssqlBook : MssqlEntity<Book>
     {
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public string Description { get; set; }
+        public string? Title { get; set; }
+        public string? Author { get; set; }
+        public string? Description { get; set; }
 
         protected override string TableName => "book";
 
@@ -30,6 +31,14 @@ values ({Title}, {Author}, {Description})";
         public override Book ToDomain()
         {
             return new Book { Title = Title, Author = Author, Description = Description };
+        }
+
+        public override void AssignFromReader(SqlDataReader reader)
+        {
+            Id = Guid.Parse(reader["id"].ToString());
+            Title = reader["title"].ToString();
+            Author = reader["author"].ToString();
+            Description = reader["description"].ToString();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Azure.Identity;
 using Domain.Entities;
 using Infrastructure.Persistence.Interfaces;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Entities
 {
-    internal class MssqlLibrary : ISqlEntity<Library>
+    public class MssqlLibrary : MssqlEntity<Library>
     {
         protected override string TableName => "library";
 
@@ -18,7 +19,7 @@ namespace Infrastructure.Persistence.Entities
         public string Name { get; set; }
 
         public override string UpdateQuery => $"update {TableName} set address={Address}, name={Name} where id={Id};";
-        public override string InsertQuery => $"insert into library(name,address) values ({Name}, {Address});";
+        public override string InsertQuery => $"insert into library(id, name,address) values ({Id}, {Name}, {Address});";
 
         public override Library ToDomain()
         {
@@ -27,7 +28,14 @@ namespace Infrastructure.Persistence.Entities
 
         public static MssqlLibrary ToPersistence(Library library)
         {
-            return new MssqlLibrary { Address = library.Address, Name = library.Name }
+            return new MssqlLibrary { Address = library.Address, Name = library.Name };
+        }
+
+        public override void AssignFromReader(SqlDataReader reader)
+        {
+            Id = Guid.Parse(reader["id"].ToString());
+            Address = reader["address"].ToString();
+            Name = reader["name"].ToString();
         }
     }
 }
