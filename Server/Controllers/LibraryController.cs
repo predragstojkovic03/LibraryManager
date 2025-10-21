@@ -19,28 +19,27 @@ namespace Server.Controllers
             _libraryService = libraryService;
         }
 
-        public async Task<List<Library>> GetLibraryListAsync()
+        public List<Library> GetLibraryList()
         {
-            return await Task.Run(() => _libraryService.GetAll());
+            return _libraryService.GetAll();
         }
 
-        public async Task<Library> GetLibraryByIdAsync(Guid id)
+        public Library GetLibraryById(Guid id)
         {
-            return await Task.Run(() => _libraryService.GetById(id));
+            return _libraryService.GetById(id);
         }
 
-        public async Task<Library> CreateLibraryAsync(LibraryDto libraryDto)
+        public Library CreateLibrary(LibraryDto libraryDto)
         {
             var library = new Library
             {
                 Name = libraryDto.Name,
                 Address = libraryDto.Address
             };
-
-            return await Task.Run(() => _libraryService.Create(library));
+            return _libraryService.Create(library);
         }
 
-        public async Task<Library> UpdateLibraryAsync(LibraryDto libraryDto)
+        public Library UpdateLibrary(LibraryDto libraryDto)
         {
             var library = new Library
             {
@@ -48,8 +47,7 @@ namespace Server.Controllers
                 Name = libraryDto.Name,
                 Address = libraryDto.Address
             };
-
-            return await Task.Run(() => _libraryService.Update(library));
+            return _libraryService.Update(library);
         }
     }
 }

@@ -16,17 +16,17 @@ namespace Server.Controllers
       _customerService = customerService;
     }
 
-    public async Task<List<Customer>> GetCustomerListAsync()
+    public List<Customer> GetCustomerList()
     {
-      return await Task.Run(() => _customerService.GetAll());
+      return _customerService.GetAll();
     }
 
-    public async Task<Customer> GetCustomerByIdAsync(Guid id)
+    public Customer GetCustomerById(Guid id)
     {
-      return await Task.Run(() => _customerService.GetById(id));
+      return _customerService.GetById(id);
     }
 
-    public async Task<Customer> CreateCustomerAsync(CustomerDto customerDto)
+    public Customer CreateCustomer(CustomerDto customerDto)
     {
       var customer = new Customer
       {
@@ -36,10 +36,10 @@ namespace Server.Controllers
         Phone = customerDto.Phone,
         Library = new Library { Id = customerDto.LibraryId }
       };
-      return await Task.Run(() => _customerService.Create(customer));
+      return _customerService.Create(customer);
     }
 
-    public async Task<Customer> UpdateCustomerAsync(CustomerDto customerDto)
+    public Customer UpdateCustomer(CustomerDto customerDto)
     {
       var customer = new Customer
       {
@@ -50,7 +50,7 @@ namespace Server.Controllers
         Phone = customerDto.Phone,
         Library = new Library { Id = customerDto.LibraryId }
       };
-      return await Task.Run(() => _customerService.Update(customer));
+      return _customerService.Update(customer);
     }
   }
 }

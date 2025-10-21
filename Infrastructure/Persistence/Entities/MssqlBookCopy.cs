@@ -9,7 +9,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Infrastructure.Persistence.Entities
 {
-    internal class MssqlBookCopy : MssqlEntity<BookCopy>
+    public class MssqlBookCopy : MssqlEntity<BookCopy>
     {
         public Guid LibraryId { get; set; }
         public Guid BookId { get; set; }

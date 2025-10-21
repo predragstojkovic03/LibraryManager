@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    internal class MssqlRepository<T, TPersistence> : IRepository<T> where T : IEntity where TPersistence : MssqlEntity<T>, new()
+    public class MssqlRepository<T, TPersistence> : IRepository<T> where T : IEntity where TPersistence : MssqlEntity<T>, new()
     {
         private readonly MssqlDataSource _dataSource;
         private readonly IEntityMapper<T, TPersistence> _mapper;
@@ -79,12 +79,40 @@ namespace Infrastructure.Persistence.Repositories
 
         public T Update(T entity)
         {
-            var mssqlEntity = _mapper.ToPersistence(entity);
+            // Check if entity exists
+            var existing = FindOne(entity.Id);
+            if (existing == null)
+            {
+                throw new Domain.Exceptions.EntityNotFoundException($"Entity with id {entity.Id} not found.");
+            }
+
+            // Merge properties for partial update
+            var mergedEntity = MergeEntities(existing, entity);
+            var mssqlEntity = _mapper.ToPersistence(mergedEntity);
             var cmd = _dataSource.CreateCommand(null);
             cmd.CommandText = mssqlEntity.UpdateQuery;
             cmd.ExecuteNonQuery();
 
-            return entity;
+            return mergedEntity;
+        }
+
+        /// <summary>
+        /// Merges non-default properties from source into target for partial update.
+        /// </summary>
+        private static T MergeEntities(T target, T source)
+        {
+            var type = typeof(T);
+            foreach (var prop in type.GetProperties())
+            {
+                var sourceValue = prop.GetValue(source);
+                var defaultValue = prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null;
+                // Only update if sourceValue is not default/null
+                if (sourceValue != null && !sourceValue.Equals(defaultValue))
+                {
+                    prop.SetValue(target, sourceValue);
+                }
+            }
+            return target;
         }
     }
 }

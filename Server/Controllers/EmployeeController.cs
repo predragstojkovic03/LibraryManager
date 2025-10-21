@@ -16,17 +16,17 @@ namespace Server.Controllers
       _employeeService = employeeService;
     }
 
-    public async Task<List<Employee>> GetEmployeeListAsync()
+    public List<Employee> GetEmployeeList()
     {
-      return await Task.Run(() => _employeeService.GetAll());
+      return _employeeService.GetAll();
     }
 
-    public async Task<Employee> GetEmployeeByIdAsync(Guid id)
+    public Employee GetEmployeeById(Guid id)
     {
-      return await Task.Run(() => _employeeService.GetById(id));
+      return _employeeService.GetById(id);
     }
 
-    public async Task<Employee> CreateEmployeeAsync(EmployeeDto employeeDto)
+    public Employee CreateEmployee(EmployeeDto employeeDto)
     {
       var employee = new Employee
       {
@@ -36,10 +36,10 @@ namespace Server.Controllers
         Password = employeeDto.Password,
         Library = new Library { Id = employeeDto.LibraryId }
       };
-      return await Task.Run(() => _employeeService.Create(employee));
+      return _employeeService.Create(employee);
     }
 
-    public async Task<Employee> UpdateEmployeeAsync(EmployeeDto employeeDto)
+    public Employee UpdateEmployee(EmployeeDto employeeDto)
     {
       var employee = new Employee
       {
@@ -50,7 +50,7 @@ namespace Server.Controllers
         Password = employeeDto.Password,
         Library = new Library { Id = employeeDto.LibraryId }
       };
-      return await Task.Run(() => _employeeService.Update(employee));
+      return _employeeService.Update(employee);
     }
   }
 }

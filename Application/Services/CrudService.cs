@@ -10,7 +10,7 @@ namespace Application.Services
 {
     public class CrudService<T> where T : IEntity
     {
-        private readonly IRepository<T> _repository;
+        protected readonly IRepository<T> _repository;
 
         public CrudService(IRepository<T> repository)
         {

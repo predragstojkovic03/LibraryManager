@@ -16,17 +16,17 @@ namespace Server.Controllers
       _bookCopyService = bookCopyService;
     }
 
-    public async Task<List<BookCopy>> GetBookCopyListAsync()
+    public List<BookCopy> GetBookCopyList()
     {
-      return await Task.Run(() => _bookCopyService.GetAll());
+      return _bookCopyService.GetAll();
     }
 
-    public async Task<BookCopy> GetBookCopyByIdAsync(Guid id)
+    public BookCopy GetBookCopyById(Guid id)
     {
-      return await Task.Run(() => _bookCopyService.GetById(id));
+      return _bookCopyService.GetById(id);
     }
 
-    public async Task<BookCopy> CreateBookCopyAsync(BookCopyDto bookCopyDto)
+    public BookCopy CreateBookCopy(BookCopyDto bookCopyDto)
     {
       var bookCopy = new BookCopy
       {
@@ -35,10 +35,10 @@ namespace Server.Controllers
         Borrower = new Customer { Id = bookCopyDto.BorrowerId },
         PrintDate = bookCopyDto.PrintDate
       };
-      return await Task.Run(() => _bookCopyService.Create(bookCopy));
+      return _bookCopyService.Create(bookCopy);
     }
 
-    public async Task<BookCopy> UpdateBookCopyAsync(BookCopyDto bookCopyDto)
+    public BookCopy UpdateBookCopy(BookCopyDto bookCopyDto)
     {
       var bookCopy = new BookCopy
       {
@@ -48,7 +48,7 @@ namespace Server.Controllers
         Borrower = new Customer { Id = bookCopyDto.BorrowerId },
         PrintDate = bookCopyDto.PrintDate
       };
-      return await Task.Run(() => _bookCopyService.Update(bookCopy));
+      return _bookCopyService.Update(bookCopy);
     }
   }
 }

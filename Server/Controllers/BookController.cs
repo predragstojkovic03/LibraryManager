@@ -16,17 +16,17 @@ namespace Server.Controllers
       _bookService = bookService;
     }
 
-    public async Task<List<Book>> GetBookListAsync()
+    public List<Book> GetBookList()
     {
-      return await Task.Run(() => _bookService.GetAll());
+      return _bookService.GetAll();
     }
 
-    public async Task<Book> GetBookByIdAsync(Guid id)
+    public Book GetBookById(Guid id)
     {
-      return await Task.Run(() => _bookService.GetById(id));
+      return _bookService.GetById(id);
     }
 
-    public async Task<Book> CreateBookAsync(BookDto bookDto)
+    public Book CreateBook(BookDto bookDto)
     {
       var book = new Book
       {
@@ -34,10 +34,10 @@ namespace Server.Controllers
         Author = bookDto.Author,
         Description = bookDto.Description
       };
-      return await Task.Run(() => _bookService.Create(book));
+      return _bookService.Create(book);
     }
 
-    public async Task<Book> UpdateBookAsync(BookDto bookDto)
+    public Book UpdateBook(BookDto bookDto)
     {
       var book = new Book
       {
@@ -46,7 +46,7 @@ namespace Server.Controllers
         Author = bookDto.Author,
         Description = bookDto.Description
       };
-      return await Task.Run(() => _bookService.Update(book));
+      return _bookService.Update(book);
     }
   }
 }

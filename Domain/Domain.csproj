@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Exceptions\EntityNotFoundException.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Exceptions\EntityNotFoundException.cs" />
+  </ItemGroup>
+
 </Project>

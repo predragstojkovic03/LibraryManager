@@ -9,7 +9,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Infrastructure.Persistence.Entities
 {
-    internal class MssqlBook : MssqlEntity<Book>
+    public class MssqlBook : MssqlEntity<Book>
     {
         public string? Title { get; set; }
         public string? Author { get; set; }

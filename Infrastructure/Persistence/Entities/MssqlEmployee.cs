@@ -9,7 +9,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Infrastructure.Persistence.Entities
 {
-    internal class MssqlEmployee : MssqlEntity<Employee>
+    public class MssqlEmployee : MssqlEntity<Employee>
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

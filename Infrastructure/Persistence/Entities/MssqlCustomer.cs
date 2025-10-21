@@ -9,7 +9,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Infrastructure.Persistence.Entities
 {
-    internal class MssqlCustomer : MssqlEntity<Customer>
+    public class MssqlCustomer : MssqlEntity<Customer>
     {
         protected override string TableName => "customer";
 
