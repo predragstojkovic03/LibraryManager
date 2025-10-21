@@ -31,7 +31,8 @@ namespace Infrastructure.Communication
 
         public T? Receive<T>()
         {
-            return JsonSerializer.Deserialize<T>(_reader.ReadLine());
+            var json = _reader.ReadLine();
+            return JsonSerializer.Deserialize<T>(json);
         }
 
         public T ReadType<T>(object podaci)

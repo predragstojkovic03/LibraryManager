@@ -14,7 +14,7 @@ namespace Infrastructure.Persistence.Mappers
         Id = persistence.Id,
         Book = new Book { Id = persistence.BookId },
         Library = new Library { Id = persistence.LibraryId },
-        Borrower = new Customer { Id = persistence.BorrowerId },
+        Borrower = persistence.BorrowerId != null ? new Customer { Id = persistence.BorrowerId.Value } : null,
       };
     }
 

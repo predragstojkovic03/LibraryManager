@@ -3,6 +3,7 @@ using Infrastructure.Dto;
 using Server.Controllers;
 using Server.Dtos;
 using System.Net.Sockets;
+using System.Text.Json;
 
 namespace Server
 {
@@ -21,15 +22,24 @@ namespace Server
 
         public void Handle()
         {
-            var req = _adapter.Receive<Request>();
-            try
+            while (true)
             {
-                var res = HandleRequest(req);
-                _adapter.Send(res);
-            }
-            catch (Exception ex)
-            {
-                _adapter.Send(new Response { Message = ex.Message, Status = 1 });
+                try
+                {
+                    var req = _adapter.Receive<Request>();
+                    if (req == null)
+                    {
+                        // Client disconnected or sent invalid data
+                        break;
+                    }
+                    Console.WriteLine("Recieved request");
+                    var res = HandleRequest(req);
+                    _adapter.Send(res);
+                }
+                catch (Exception ex)
+                {
+                    _adapter.Send(new Response { Message = ex.Message, Status = 1 });
+                }
             }
         }
 
@@ -40,7 +50,11 @@ namespace Server
                 case Operation.AuthLogin:
                     {
                         var controller = _server.GetController<EmployeeController>();
-                        var dto = request.Payload as AuthLoginDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Login data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<AuthLoginDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "Login data is missing or invalid." };
                         var employee = controller.GetEmployeeList().Find(e => e.Username == dto.Username && e.Password == dto.Password);
                         if (employee == null)
                             return new Response { Status = 1, Message = "Invalid username or password" };
@@ -55,21 +69,39 @@ namespace Server
                 case Operation.BooksFindOne:
                     {
                         var controller = _server.GetController<BookController>();
-                        var id = (Guid)request.Payload;
-                        var book = controller.GetBookById(id);
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Book id is missing." };
+                        Guid bookId;
+                        try
+                        {
+                            bookId = JsonSerializer.Deserialize<Guid>(request.Payload.ToString());
+                        }
+                        catch
+                        {
+                            return new Response { Status = 1, Message = "Invalid book id." };
+                        }
+                        var book = controller.GetBookById(bookId);
                         return new Response { Data = book, Status = 0 };
                     }
                 case Operation.BooksCreate:
                     {
                         var controller = _server.GetController<BookController>();
-                        var dto = request.Payload as BookDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Book data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<BookDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "Book data is missing or invalid." };
                         var book = controller.CreateBook(dto);
                         return new Response { Data = book, Status = 0 };
                     }
                 case Operation.BooksUpdate:
                     {
                         var controller = _server.GetController<BookController>();
-                        var dto = request.Payload as BookDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Book data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<BookDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "Book data is missing or invalid." };
                         var book = controller.UpdateBook(dto);
                         return new Response { Data = book, Status = 0 };
                     }
@@ -87,21 +119,39 @@ namespace Server
                 case Operation.BookCopiesFindOne:
                     {
                         var controller = _server.GetController<BookCopyController>();
-                        var id = (Guid)request.Payload;
-                        var copy = controller.GetBookCopyById(id);
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Book copy id is missing." };
+                        Guid copyId;
+                        try
+                        {
+                            copyId = JsonSerializer.Deserialize<Guid>(request.Payload.ToString());
+                        }
+                        catch
+                        {
+                            return new Response { Status = 1, Message = "Invalid book copy id." };
+                        }
+                        var copy = controller.GetBookCopyById(copyId);
                         return new Response { Data = copy, Status = 0 };
                     }
                 case Operation.BookCopiesCreate:
                     {
                         var controller = _server.GetController<BookCopyController>();
-                        var dto = request.Payload as BookCopyDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "BookCopy data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<BookCopyDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "BookCopy data is missing or invalid." };
                         var copy = controller.CreateBookCopy(dto);
                         return new Response { Data = copy, Status = 0 };
                     }
                 case Operation.BookCopiesUpdate:
                     {
                         var controller = _server.GetController<BookCopyController>();
-                        var dto = request.Payload as BookCopyDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "BookCopy data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<BookCopyDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "BookCopy data is missing or invalid." };
                         var copy = controller.UpdateBookCopy(dto);
                         return new Response { Data = copy, Status = 0 };
                     }
@@ -119,21 +169,39 @@ namespace Server
                 case Operation.CustomersFindOne:
                     {
                         var controller = _server.GetController<CustomerController>();
-                        var id = (Guid)request.Payload;
-                        var customer = controller.GetCustomerById(id);
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Customer id is missing." };
+                        Guid customerId;
+                        try
+                        {
+                            customerId = JsonSerializer.Deserialize<Guid>(request.Payload.ToString());
+                        }
+                        catch
+                        {
+                            return new Response { Status = 1, Message = "Invalid customer id." };
+                        }
+                        var customer = controller.GetCustomerById(customerId);
                         return new Response { Data = customer, Status = 0 };
                     }
                 case Operation.CustomersCreate:
                     {
                         var controller = _server.GetController<CustomerController>();
-                        var dto = request.Payload as CustomerDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Customer data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<CustomerDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "Customer data is missing or invalid." };
                         var customer = controller.CreateCustomer(dto);
                         return new Response { Data = customer, Status = 0 };
                     }
                 case Operation.CustomersUpdate:
                     {
                         var controller = _server.GetController<CustomerController>();
-                        var dto = request.Payload as CustomerDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Customer data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<CustomerDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "Customer data is missing or invalid." };
                         var customer = controller.UpdateCustomer(dto);
                         return new Response { Data = customer, Status = 0 };
                     }
@@ -151,21 +219,39 @@ namespace Server
                 case Operation.EmployeesFindOne:
                     {
                         var controller = _server.GetController<EmployeeController>();
-                        var id = (Guid)request.Payload;
-                        var employee = controller.GetEmployeeById(id);
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Employee id is missing." };
+                        Guid employeeId;
+                        try
+                        {
+                            employeeId = JsonSerializer.Deserialize<Guid>(request.Payload.ToString());
+                        }
+                        catch
+                        {
+                            return new Response { Status = 1, Message = "Invalid employee id." };
+                        }
+                        var employee = controller.GetEmployeeById(employeeId);
                         return new Response { Data = employee, Status = 0 };
                     }
                 case Operation.EmployeesCreate:
                     {
                         var controller = _server.GetController<EmployeeController>();
-                        var dto = request.Payload as EmployeeDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Employee data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<EmployeeDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "Employee data is missing or invalid." };
                         var employee = controller.CreateEmployee(dto);
                         return new Response { Data = employee, Status = 0 };
                     }
                 case Operation.EmployeesUpdate:
                     {
                         var controller = _server.GetController<EmployeeController>();
-                        var dto = request.Payload as EmployeeDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Employee data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<EmployeeDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "Employee data is missing or invalid." };
                         var employee = controller.UpdateEmployee(dto);
                         return new Response { Data = employee, Status = 0 };
                     }
@@ -183,21 +269,39 @@ namespace Server
                 case Operation.LibrariesFindOne:
                     {
                         var controller = _server.GetController<LibraryController>();
-                        var id = (Guid)request.Payload;
-                        var library = controller.GetLibraryById(id);
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Library id is missing." };
+                        Guid libraryId;
+                        try
+                        {
+                            libraryId = JsonSerializer.Deserialize<Guid>(request.Payload.ToString());
+                        }
+                        catch
+                        {
+                            return new Response { Status = 1, Message = "Invalid library id." };
+                        }
+                        var library = controller.GetLibraryById(libraryId);
                         return new Response { Data = library, Status = 0 };
                     }
                 case Operation.LibrariesCreate:
                     {
                         var controller = _server.GetController<LibraryController>();
-                        var dto = request.Payload as LibraryDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Library data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<LibraryDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "Library data is missing or invalid." };
                         var library = controller.CreateLibrary(dto);
                         return new Response { Data = library, Status = 0 };
                     }
                 case Operation.LibrariesUpdate:
                     {
                         var controller = _server.GetController<LibraryController>();
-                        var dto = request.Payload as LibraryDto;
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Library data is missing or invalid." };
+                        var dto = JsonSerializer.Deserialize<LibraryDto>(request.Payload.ToString());
+                        if (dto == null)
+                            return new Response { Status = 1, Message = "Library data is missing or invalid." };
                         var library = controller.UpdateLibrary(dto);
                         return new Response { Data = library, Status = 0 };
                     }

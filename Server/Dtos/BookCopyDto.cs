@@ -6,6 +6,6 @@ namespace Server.Dtos
     public Guid LibraryId { get; set; }
     public Guid BookId { get; set; }
     public Guid BorrowerId { get; set; }
-    public DateOnly PrintDate { get; set; }
+    public DateTime PrintDate { get; set; }
   }
 }

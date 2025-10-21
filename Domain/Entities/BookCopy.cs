@@ -12,6 +12,6 @@ namespace Domain.Entities
         public Library Library { get; set; }
         public Book Book { get; set; }
         public Customer Borrower { get; set; }
-        public DateOnly PrintDate { get; set; }
+        public DateTime PrintDate { get; set; }
     }
 }

@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Client.Server
 {
-    internal class ServerAdapter
+    public class ServerAdapter
     {
         private Socket _socket;
         private CommunicationAdapter _communicationAdapter;
 
-        private ServerAdapter() { }
+        public ServerAdapter() { }
 
         public void Connect()
         {
@@ -36,7 +36,7 @@ namespace Client.Server
 
         public Response? MakeRequest(Operation o, object payload)
         {
-            Request request = new(o, payload);
+            var request = new Request { Operation = o, Payload = payload };
             _communicationAdapter.Send(request);
 
             return _communicationAdapter.Receive<Response>();
@@ -44,7 +44,7 @@ namespace Client.Server
 
         public void Emit(Operation o, object payload)
         {
-            Request request = new(o, payload);
+            var request = new Request { Operation = o, Payload = payload };
             _communicationAdapter.Send(request);
         }
     }

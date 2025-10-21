@@ -1,3 +1,4 @@
+using System.Windows.Forms;
 namespace Predrag_Stojkovic_2021_0414
 {
     internal static class Program
@@ -11,7 +12,7 @@ namespace Predrag_Stojkovic_2021_0414
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            System.Windows.Forms.Application.Run(new LoginForm());
         }
     }
 }

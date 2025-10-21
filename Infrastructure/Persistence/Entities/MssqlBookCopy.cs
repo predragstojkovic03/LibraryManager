@@ -13,8 +13,8 @@ namespace Infrastructure.Persistence.Entities
     {
         public Guid LibraryId { get; set; }
         public Guid BookId { get; set; }
-        public Guid BorrowerId { get; set; }
-        public DateOnly PrintDate { get; set; }
+        public Guid? BorrowerId { get; set; }
+        public DateTime PrintDate { get; set; }
 
         protected override string TableName => "book_copy";
 
@@ -40,8 +40,8 @@ values ({Id}, {LibraryId}, {BookId}, {BorrowerId}, {PrintDate})";
             Id = Guid.Parse(reader["id"].ToString());
             LibraryId = Guid.Parse(reader["library_id"].ToString());
             BookId = Guid.Parse(reader["book_id"].ToString());
-            BorrowerId = Guid.Parse(reader["borrower_id"].ToString());
-            PrintDate = DateOnly.Parse(reader["print_date"].ToString());
+            BorrowerId = reader["borrower_id"] != DBNull.Value ? Guid.Parse(reader["borrower_id"].ToString()) : (Guid?)null;
+            PrintDate = DateTime.Parse(reader["print_date"].ToString());
         }
     }
 }

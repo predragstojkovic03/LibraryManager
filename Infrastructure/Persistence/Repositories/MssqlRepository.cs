@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Exceptions;
 
 namespace Infrastructure.Persistence.Repositories
 {
@@ -25,8 +26,10 @@ namespace Infrastructure.Persistence.Repositories
         {
             var mssqlEntity = _mapper.ToPersistence(entity);
             var cmd = _dataSource.CreateCommand(null);
+            _dataSource.OpenConnection();
             cmd.CommandText = mssqlEntity.InsertQuery;
             cmd.ExecuteNonQuery();
+            _dataSource.CloseConnection();
 
             return entity;
         }
@@ -36,7 +39,10 @@ namespace Infrastructure.Persistence.Repositories
             var mssqlEntity = _mapper.ToPersistence(entity);
             var cmd = _dataSource.CreateCommand(null);
             cmd.CommandText = mssqlEntity.DeleteQuery;
+
+            _dataSource.OpenConnection();
             cmd.ExecuteNonQuery();
+            _dataSource.CloseConnection();
         }
 
         public List<T> FindAll()
@@ -46,6 +52,7 @@ namespace Infrastructure.Persistence.Repositories
             List<T> entities = new();
             cmd.CommandText = helperEntity.SelectQuery;
 
+            _dataSource.OpenConnection();
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
@@ -55,6 +62,7 @@ namespace Infrastructure.Persistence.Repositories
                     entities.Add(persistence.ToDomain());
                 }
             }
+            _dataSource.CloseConnection();
 
             cmd.Dispose();
             return entities;
@@ -66,6 +74,7 @@ namespace Infrastructure.Persistence.Repositories
             var cmd = _dataSource.CreateCommand(null);
             cmd.CommandText = helperEntity.SelectOneQuery;
 
+            _dataSource.OpenConnection();
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
                 if (reader.Read())
@@ -73,6 +82,8 @@ namespace Infrastructure.Persistence.Repositories
                     helperEntity.AssignFromReader(reader);
                 }
             }
+
+            _dataSource.CloseConnection();
             cmd.Dispose();
             return helperEntity.ToDomain();
         }
@@ -83,7 +94,7 @@ namespace Infrastructure.Persistence.Repositories
             var existing = FindOne(entity.Id);
             if (existing == null)
             {
-                throw new Domain.Exceptions.EntityNotFoundException($"Entity with id {entity.Id} not found.");
+                throw new EntityNotFoundException($"Entity with id {entity.Id} not found.");
             }
 
             // Merge properties for partial update
@@ -91,7 +102,10 @@ namespace Infrastructure.Persistence.Repositories
             var mssqlEntity = _mapper.ToPersistence(mergedEntity);
             var cmd = _dataSource.CreateCommand(null);
             cmd.CommandText = mssqlEntity.UpdateQuery;
+
+            _dataSource.OpenConnection();
             cmd.ExecuteNonQuery();
+            _dataSource.CloseConnection();
 
             return mergedEntity;
         }

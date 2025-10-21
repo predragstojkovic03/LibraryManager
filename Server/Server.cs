@@ -53,20 +53,23 @@ namespace Server
             try
             {
                 _serverSocket.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), port));
-                Thread listener = new(_serverSocket.Listen) { IsBackground = true };
-                listener.Start();
+                _serverSocket.Listen(100);
+                Console.WriteLine($"Server listening on port {port}...");
 
                 while (true)
                 {
                     var clientSocket = _serverSocket.Accept();
+                    Console.WriteLine($"Client connected: {clientSocket.RemoteEndPoint}");
                     ClientHandler handler = new(clientSocket, this);
                     _clients.Add(handler);
                     Thread handlerThread = new(handler.Handle) { IsBackground = true };
                     handlerThread.Start();
                 }
-
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Server error: {ex.Message}");
+            }
         }
 
         public void RemoveClient(ClientHandler handler)
