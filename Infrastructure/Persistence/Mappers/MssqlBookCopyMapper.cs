@@ -25,7 +25,7 @@ namespace Infrastructure.Persistence.Mappers
         Id = domain.Id,
         BookId = domain.Book.Id,
         LibraryId = domain.Library.Id,
-        BorrowerId = domain.Borrower.Id
+        BorrowerId = domain.Borrower?.Id
       };
     }
   }

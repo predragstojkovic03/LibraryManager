@@ -14,10 +14,10 @@ namespace Infrastructure.Persistence.Interfaces
         public Guid Id { get; set; }
         abstract protected string TableName { get; }
         public abstract string UpdateQuery { get; }
-        public string DeleteQuery { get => $"delete from {TableName} where Id = {Id};"; }
+        public string DeleteQuery { get => $"delete from {TableName} where Id = '{Id}';"; }
         public abstract string InsertQuery { get; }
         public string SelectQuery { get => $"select * from {TableName};"; }
-        public string SelectOneQuery => $"select * from ${TableName} where id={Id}";
+        public string SelectOneQuery => $"select * from {TableName} where id='{Id}';";
         public abstract void AssignFromReader(SqlDataReader reader);
     }
 }

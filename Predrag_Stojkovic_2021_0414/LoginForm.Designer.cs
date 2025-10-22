@@ -10,6 +10,7 @@ namespace Predrag_Stojkovic_2021_0414
     private Label lblUsername;
     private Label lblPassword;
     private Button btnLogin;
+    private Button btnGuest;
 
     protected override void Dispose(bool disposing)
     {
@@ -27,6 +28,7 @@ namespace Predrag_Stojkovic_2021_0414
       this.lblUsername = new System.Windows.Forms.Label();
       this.lblPassword = new System.Windows.Forms.Label();
       this.btnLogin = new System.Windows.Forms.Button();
+      this.btnGuest = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // txtUsername
@@ -66,12 +68,21 @@ namespace Predrag_Stojkovic_2021_0414
       this.btnLogin.Text = "Login";
       this.btnLogin.UseVisualStyleBackColor = true;
       // 
+      // btnGuest
+      // 
+      this.btnGuest.Location = new System.Drawing.Point(12, 226);
+      this.btnGuest.Name = "btnGuest";
+      this.btnGuest.Size = new System.Drawing.Size(125, 41);
+      this.btnGuest.Text = "Guest";
+      this.btnGuest.UseVisualStyleBackColor = true;
+      // 
       // LoginForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(417, 276);
       this.Controls.Add(this.btnLogin);
+      this.Controls.Add(this.btnGuest);
       this.Controls.Add(this.lblPassword);
       this.Controls.Add(this.lblUsername);
       this.Controls.Add(this.txtPassword);

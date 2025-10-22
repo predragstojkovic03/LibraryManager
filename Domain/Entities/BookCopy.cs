@@ -11,7 +11,7 @@ namespace Domain.Entities
         public Guid Id { get; set; }
         public Library Library { get; set; }
         public Book Book { get; set; }
-    public Customer? Borrower { get; set; }
+        public Customer? Borrower { get; set; }
         public DateTime PrintDate { get; set; }
     }
 }

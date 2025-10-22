@@ -24,90 +24,135 @@ namespace Infrastructure.Persistence.Repositories
 
         public T Create(T entity)
         {
-            var mssqlEntity = _mapper.ToPersistence(entity);
-            var cmd = _dataSource.CreateCommand(null);
-            _dataSource.OpenConnection();
-            cmd.CommandText = mssqlEntity.InsertQuery;
-            cmd.ExecuteNonQuery();
-            _dataSource.CloseConnection();
+            try
+            {
+                var mssqlEntity = _mapper.ToPersistence(entity);
+                var cmd = _dataSource.CreateCommand(null);
+                _dataSource.OpenConnection();
+                cmd.CommandText = mssqlEntity.InsertQuery;
+                cmd.ExecuteNonQuery();
+                _dataSource.CloseConnection();
 
-            return entity;
+                return entity;
+            }
+            catch (SqlException ex)
+            {
+                _dataSource.CloseConnection();
+                Console.WriteLine($"SQL Error {ex.Number}: {ex.Message}");
+                throw;
+            }
         }
 
         public void Delete(T entity)
         {
-            var mssqlEntity = _mapper.ToPersistence(entity);
-            var cmd = _dataSource.CreateCommand(null);
-            cmd.CommandText = mssqlEntity.DeleteQuery;
+            try
+            {
+                var mssqlEntity = _mapper.ToPersistence(entity);
+                var cmd = _dataSource.CreateCommand(null);
+                cmd.CommandText = mssqlEntity.DeleteQuery;
 
-            _dataSource.OpenConnection();
-            cmd.ExecuteNonQuery();
-            _dataSource.CloseConnection();
+                _dataSource.OpenConnection();
+                cmd.ExecuteNonQuery();
+                _dataSource.CloseConnection();
+            }
+            catch (SqlException ex)
+            {
+                _dataSource.CloseConnection();
+                Console.WriteLine($"SQL Error {ex.Number}: {ex.Message}");
+                throw;
+            }
         }
 
         public List<T> FindAll()
         {
-            var helperEntity = new TPersistence();
-            var cmd = _dataSource.CreateCommand(null);
-            List<T> entities = new();
-            cmd.CommandText = helperEntity.SelectQuery;
-
-            _dataSource.OpenConnection();
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            try
             {
-                while (reader.Read())
-                {
-                    var persistence = new TPersistence();
-                    persistence.AssignFromReader(reader);
-                    entities.Add(_mapper.ToDomain(persistence));
-                }
-            }
-            _dataSource.CloseConnection();
+                var helperEntity = new TPersistence();
+                var cmd = _dataSource.CreateCommand(null);
+                List<T> entities = new();
+                cmd.CommandText = helperEntity.SelectQuery;
 
-            cmd.Dispose();
-            return entities;
+                _dataSource.OpenConnection();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var persistence = new TPersistence();
+                        persistence.AssignFromReader(reader);
+                        entities.Add(_mapper.ToDomain(persistence));
+                    }
+                }
+                _dataSource.CloseConnection();
+
+                cmd.Dispose();
+                return entities;
+            }
+            catch (SqlException ex)
+            {
+                _dataSource.CloseConnection();
+                Console.WriteLine($"SQL Error {ex.Number}: {ex.Message}");
+                throw;
+            }
         }
 
         public T FindOne(Guid id)
         {
-            var helperEntity = new TPersistence() { Id = id };
-            var cmd = _dataSource.CreateCommand(null);
-            cmd.CommandText = helperEntity.SelectOneQuery;
-
-            _dataSource.OpenConnection();
-            using (SqlDataReader reader = cmd.ExecuteReader())
+            try
             {
-                if (reader.Read())
-                {
-                    helperEntity.AssignFromReader(reader);
-                }
-            }
+                var helperEntity = new TPersistence() { Id = id };
+                var cmd = _dataSource.CreateCommand(null);
+                cmd.CommandText = helperEntity.SelectOneQuery;
 
-            _dataSource.CloseConnection();
-            cmd.Dispose();
-            return _mapper.ToDomain(helperEntity);
+                _dataSource.OpenConnection();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        helperEntity.AssignFromReader(reader);
+                    }
+                }
+
+                _dataSource.CloseConnection();
+                cmd.Dispose();
+                return _mapper.ToDomain(helperEntity);
+            }
+            catch (SqlException ex)
+            {
+                _dataSource.CloseConnection();
+                Console.WriteLine($"SQL Error {ex.Number}: {ex.Message}");
+                throw;
+            }
         }
 
         public T Update(T entity)
         {
-            // Check if entity exists
-            var existing = FindOne(entity.Id);
-            if (existing == null)
+            try
             {
-                throw new EntityNotFoundException($"Entity with id {entity.Id} not found.");
+                // Check if entity exists
+                var existing = FindOne(entity.Id);
+                if (existing == null)
+                {
+                    throw new EntityNotFoundException($"Entity with id {entity.Id} not found.");
+                }
+
+                // Merge properties for partial update
+                var mergedEntity = MergeEntities(existing, entity);
+                var mssqlEntity = _mapper.ToPersistence(mergedEntity);
+                var cmd = _dataSource.CreateCommand(null);
+                cmd.CommandText = mssqlEntity.UpdateQuery;
+
+                _dataSource.OpenConnection();
+                cmd.ExecuteNonQuery();
+                _dataSource.CloseConnection();
+
+                return mergedEntity;
             }
-
-            // Merge properties for partial update
-            var mergedEntity = MergeEntities(existing, entity);
-            var mssqlEntity = _mapper.ToPersistence(mergedEntity);
-            var cmd = _dataSource.CreateCommand(null);
-            cmd.CommandText = mssqlEntity.UpdateQuery;
-
-            _dataSource.OpenConnection();
-            cmd.ExecuteNonQuery();
-            _dataSource.CloseConnection();
-
-            return mergedEntity;
+            catch (SqlException ex)
+            {
+                _dataSource.CloseConnection();
+                Console.WriteLine($"SQL Error {ex.Number}: {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -120,8 +165,13 @@ namespace Infrastructure.Persistence.Repositories
             {
                 var sourceValue = prop.GetValue(source);
                 var defaultValue = prop.PropertyType.IsValueType ? Activator.CreateInstance(prop.PropertyType) : null;
-                // Only update if sourceValue is not default/null
-                if (sourceValue != null && !sourceValue.Equals(defaultValue))
+                // For reference types, allow explicit null to overwrite
+                if (!prop.PropertyType.IsValueType)
+                {
+                    prop.SetValue(target, sourceValue);
+                }
+                // For value types, only update if not default
+                else if (sourceValue != null && !sourceValue.Equals(defaultValue))
                 {
                     prop.SetValue(target, sourceValue);
                 }

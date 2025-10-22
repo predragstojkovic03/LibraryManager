@@ -61,8 +61,8 @@ namespace Predrag_Stojkovic_2021_0414
     private void LoadCopies()
     {
       var allCopies = _customerController.GetAllBookCopies(_libraryId);
-      _borrowedCopies = allCopies.Where(c => c.Borrower.Id == _customer.Id).ToList();
-      _availableCopies = allCopies.Where(c => c.Borrower.Id == Guid.Empty).ToList();
+      _borrowedCopies = allCopies.Where(c => c.Borrower?.Id == _customer.Id).ToList();
+      _availableCopies = allCopies.Where(c => c.Borrower == null).ToList();
 
       lstBorrowedCopies.DataSource = _borrowedCopies
         .GroupBy(bc => bc.Book.Id)

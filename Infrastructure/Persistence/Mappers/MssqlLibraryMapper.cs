@@ -13,13 +13,14 @@ namespace Infrastructure.Persistence.Mappers
     {
         public Library ToDomain(MssqlLibrary persistence)
         {
-            return new Library { Address = persistence.Address, Name = persistence.Name };
+            return new Library { Address = persistence.Address, Name = persistence.Name, Id = persistence.Id };
         }
 
         public MssqlLibrary ToPersistence(Library domain)
         {
             return new MssqlLibrary
             {
+                Id = domain.Id,
                 Address = domain.Address,
                 Name = domain.Name
             };

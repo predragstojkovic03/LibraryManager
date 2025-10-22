@@ -8,6 +8,7 @@ using Server.Dtos;
 using System.Text.Json.Nodes;
 using System.Text.Json;
 using Domain.Entities;
+using Client;
 
 namespace Predrag_Stojkovic_2021_0414
 {
@@ -23,6 +24,7 @@ namespace Predrag_Stojkovic_2021_0414
       _serverAdapter.Connect();
       _loginController = new LoginController(_serverAdapter);
       btnLogin.Click += BtnLogin_Click;
+      btnGuest.Click += BtnGuest_Click;
     }
 
     private void BtnLogin_Click(object? sender, EventArgs e)
@@ -51,14 +53,21 @@ namespace Predrag_Stojkovic_2021_0414
       }
       if (employee != null)
       {
-        var customersForm = new CustomersForm(_serverAdapter, employee.Library.Id);
-        customersForm.Show();
+        var dashboardForm = new Client.DashboardForm(_serverAdapter, employee.Library.Id);
+        dashboardForm.Show();
         this.Hide();
       }
       else
       {
         MessageBox.Show(response?.Message ?? "Login failed");
       }
+    }
+
+    private void BtnGuest_Click(object? sender, EventArgs e)
+    {
+      var guestForm = new GuestSearchForm(_serverAdapter);
+      guestForm.Show();
+      this.Hide();
     }
   }
 }

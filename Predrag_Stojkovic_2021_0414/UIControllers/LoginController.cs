@@ -15,8 +15,8 @@ namespace Predrag_Stojkovic_2021_0414.UIControllers
 
     public Response? Login(string username, string password)
     {
-  var loginRequest = new { Username = username, Password = password };
-  return _serverAdapter.MakeRequest(Operation.AuthLogin, loginRequest);
+      var loginRequest = new { Username = username, Password = password };
+      return _serverAdapter.MakeRequest(Operation.AuthLogin, loginRequest);
     }
   }
 }

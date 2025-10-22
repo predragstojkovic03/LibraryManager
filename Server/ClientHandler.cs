@@ -1,4 +1,5 @@
-﻿using Infrastructure.Communication;
+﻿using Domain.Entities;
+using Infrastructure.Communication;
 using Infrastructure.Dto;
 using Server.Controllers;
 using Server.Dtos;
@@ -149,7 +150,7 @@ namespace Server
                         var controller = _server.GetController<BookCopyController>();
                         if (request.Payload == null)
                             return new Response { Status = 1, Message = "BookCopy data is missing or invalid." };
-                        var dto = JsonSerializer.Deserialize<BookCopyDto>(request.Payload.ToString());
+                        var dto = JsonSerializer.Deserialize<BookCopy>(request.Payload.ToString());
                         if (dto == null)
                             return new Response { Status = 1, Message = "BookCopy data is missing or invalid." };
                         var copy = controller.UpdateBookCopy(dto);

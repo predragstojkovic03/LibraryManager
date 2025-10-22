@@ -38,14 +38,14 @@ namespace Server.Controllers
       return _bookCopyService.Create(bookCopy);
     }
 
-    public BookCopy UpdateBookCopy(BookCopyDto bookCopyDto)
+    public BookCopy UpdateBookCopy(BookCopy bookCopyDto)
     {
       var bookCopy = new BookCopy
       {
         Id = bookCopyDto.Id,
-        Library = new Library { Id = bookCopyDto.LibraryId },
-        Book = new Book { Id = bookCopyDto.BookId },
-        Borrower = new Customer { Id = bookCopyDto.BorrowerId },
+        Library = new Library { Id = bookCopyDto.Library.Id },
+        Book = new Book { Id = bookCopyDto.Book.Id },
+        Borrower = bookCopyDto.Borrower != null ? new Customer { Id = bookCopyDto.Borrower.Id } : null,
         PrintDate = bookCopyDto.PrintDate
       };
       return _bookCopyService.Update(bookCopy);

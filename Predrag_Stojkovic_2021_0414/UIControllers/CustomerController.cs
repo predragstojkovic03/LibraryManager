@@ -20,7 +20,7 @@ namespace Predrag_Stojkovic_2021_0414.UIControllers
 
     public List<Customer> GetCustomers(Guid libraryId)
     {
-  var response = _serverAdapter.MakeRequest(Operation.CustomersFindAll, (object?)null);
+      var response = _serverAdapter.MakeRequest(Operation.CustomersFindAll, (object?)null);
       if (response?.Data != null && response.Data.ToString() != null)
       {
         try
@@ -39,7 +39,7 @@ namespace Predrag_Stojkovic_2021_0414.UIControllers
 
     public List<BookCopy> GetBorrowedCopies(Guid customerId)
     {
-     var response = _serverAdapter.MakeRequest(Operation.BookCopiesFindAll, (object?)null);
+      var response = _serverAdapter.MakeRequest(Operation.BookCopiesFindAll, (object?)null);
       if (response?.Data != null && response.Data.ToString() != null)
       {
         try
@@ -58,7 +58,7 @@ namespace Predrag_Stojkovic_2021_0414.UIControllers
 
     public List<BookCopy> GetAllBookCopies(Guid libraryId)
     {
-  var response = _serverAdapter.MakeRequest(Operation.BookCopiesFindAll, (object?)null);
+      var response = _serverAdapter.MakeRequest(Operation.BookCopiesFindAll, (object?)null);
       if (response?.Data != null && response.Data.ToString() != null)
       {
         try
@@ -75,7 +75,7 @@ namespace Predrag_Stojkovic_2021_0414.UIControllers
       return new List<BookCopy>();
     }
 
-  public List<Book> GetAllBooks(Guid libraryId)
+    public List<Book> GetAllBooks(Guid libraryId)
     {
       var response = _serverAdapter.MakeRequest(Operation.BooksFindAll, null);
       if (response?.Data != null && response.Data.ToString() != null)
@@ -107,11 +107,11 @@ namespace Predrag_Stojkovic_2021_0414.UIControllers
 
     public void ReturnBookCopy(Guid copyId, Guid libraryId)
     {
-      // Use BookCopiesUpdate: set BorrowerId to Guid.Empty for the selected copy in the correct library
+      // Use BookCopiesUpdate: set BorrowerId to null for the selected copy in the correct library
       var copy = GetAllBookCopies(libraryId).FirstOrDefault(bc => bc.Id == copyId);
       if (copy != null)
       {
-  copy.Borrower = default;
+        copy.Borrower = null;
         _serverAdapter.MakeRequest(Operation.BookCopiesUpdate, copy);
       }
     }
