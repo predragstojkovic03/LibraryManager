@@ -18,13 +18,8 @@ namespace Infrastructure.Persistence.Entities
         public string Address { get; set; }
         public string Name { get; set; }
 
-        public override string UpdateQuery => $"update {TableName} set address={Address}, name={Name} where id={Id};";
-        public override string InsertQuery => $"insert into library(id, name,address) values ({Id}, {Name}, {Address});";
-
-        public override Library ToDomain()
-        {
-            return new Library { Address = Address, Name = Name };
-        }
+        public override string UpdateQuery => $"update {TableName} set address={(Address == null ? "NULL" : $"'{Address}'")}, name={(Name == null ? "NULL" : $"'{Name}'")} where id='{Id}';";
+        public override string InsertQuery => $"insert into library(id, name, address) values ('{Id}', {(Name == null ? "NULL" : $"'{Name}'")}, {(Address == null ? "NULL" : $"'{Address}'")});";
 
         public static MssqlLibrary ToPersistence(Library library)
         {

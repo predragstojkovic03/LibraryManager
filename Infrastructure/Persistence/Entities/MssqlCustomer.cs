@@ -19,22 +19,17 @@ namespace Infrastructure.Persistence.Entities
         public string? Phone { get; set; }
         public Guid LibraryId { get; set; }
 
-        public override string UpdateQuery => $@"update ${TableName}
-set first_name={FirstName},
-last_name={LastName},
-email={Email ?? null},
-phone={Phone},
-library_id={LibraryId}
-where id={Id}";
+        public override string UpdateQuery => $@"update {TableName}
+set first_name={(FirstName == null ? "NULL" : $"'{FirstName}'")},
+    last_name={(LastName == null ? "NULL" : $"'{LastName}'")},
+    email={(Email == null ? "NULL" : $"'{Email}'")},
+    phone={(Phone == null ? "NULL" : $"'{Phone}'")},
+    library_id='{LibraryId}'
+where id='{Id}'";
 
-        public override string InsertQuery => $@"insert into ${TableName}
+        public override string InsertQuery => $@"insert into {TableName}
 (id, first_name, last_name, email, phone, library_id)
-values ({Id}, {FirstName}, {LastName}, {Email}, {Phone}, {LibraryId})";
-
-        public override Customer ToDomain()
-        {
-            return new Customer { FirstName = FirstName, LastName = LastName, Email = Email, Phone = Phone };
-        }
+values ('{Id}', {(FirstName == null ? "NULL" : $"'{FirstName}'")}, {(LastName == null ? "NULL" : $"'{LastName}'")}, {(Email == null ? "NULL" : $"'{Email}'")}, {(Phone == null ? "NULL" : $"'{Phone}'")}, '{LibraryId}')";
 
         public override void AssignFromReader(SqlDataReader reader)
         {

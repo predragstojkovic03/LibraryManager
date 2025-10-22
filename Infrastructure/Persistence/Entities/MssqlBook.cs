@@ -18,20 +18,15 @@ namespace Infrastructure.Persistence.Entities
         protected override string TableName => "book";
 
         public override string UpdateQuery => $@"update {TableName}
-set title={Title},
-author={Author},
-description={Description}
-where id={Id}";
+set title={(Title == null ? "NULL" : $"'{Title}'")},
+    author={(Author == null ? "NULL" : $"'{Author}'")},
+    description={(Description == null ? "NULL" : $"'{Description}'")}
+where id='{Id}'";
 
         public override string InsertQuery => $@"insert into {TableName}
 (title, author, description)
-values ({Title}, {Author}, {Description})";
+values ({(Title == null ? "NULL" : $"'{Title}'")}, {(Author == null ? "NULL" : $"'{Author}'")}, {(Description == null ? "NULL" : $"'{Description}'")})";
 
-
-        public override Book ToDomain()
-        {
-            return new Book { Title = Title, Author = Author, Description = Description };
-        }
 
         public override void AssignFromReader(SqlDataReader reader)
         {

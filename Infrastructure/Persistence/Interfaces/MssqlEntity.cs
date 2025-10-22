@@ -13,7 +13,6 @@ namespace Infrastructure.Persistence.Interfaces
     {
         public Guid Id { get; set; }
         abstract protected string TableName { get; }
-        abstract public T ToDomain();
         public abstract string UpdateQuery { get; }
         public string DeleteQuery { get => $"delete from {TableName} where Id = {Id};"; }
         public abstract string InsertQuery { get; }

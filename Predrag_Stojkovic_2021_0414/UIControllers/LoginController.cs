@@ -1,6 +1,6 @@
 using Client.Server;
 using Infrastructure.Communication;
-using Server.Dtos;
+
 
 namespace Predrag_Stojkovic_2021_0414.UIControllers
 {
@@ -15,8 +15,8 @@ namespace Predrag_Stojkovic_2021_0414.UIControllers
 
     public Response? Login(string username, string password)
     {
-      var dto = new AuthLoginDto { Username = username, Password = password };
-      return _serverAdapter.MakeRequest(Operation.AuthLogin, dto);
+  var loginRequest = new { Username = username, Password = password };
+  return _serverAdapter.MakeRequest(Operation.AuthLogin, loginRequest);
     }
   }
 }

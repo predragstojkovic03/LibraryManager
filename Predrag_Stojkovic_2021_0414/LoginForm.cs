@@ -7,6 +7,7 @@ using Infrastructure.Communication;
 using Server.Dtos;
 using System.Text.Json.Nodes;
 using System.Text.Json;
+using Domain.Entities;
 
 namespace Predrag_Stojkovic_2021_0414
 {
@@ -29,18 +30,18 @@ namespace Predrag_Stojkovic_2021_0414
       var username = txtUsername.Text;
       var password = txtPassword.Text;
       var response = _loginController.Login(username, password);
-      EmployeeDto? employee = null;
+      Employee? employee = null;
       if (response != null && response.Data != null && response.Status == 0)
       {
         try
         {
           if (response.Data is JsonElement element)
           {
-            employee = JsonSerializer.Deserialize<EmployeeDto>(element.GetRawText());
+            employee = JsonSerializer.Deserialize<Employee>(element.GetRawText());
           }
           else
           {
-            employee = JsonSerializer.Deserialize<EmployeeDto>(response.Data.ToString());
+            employee = JsonSerializer.Deserialize<Employee>(response.Data.ToString());
           }
         }
         catch
@@ -50,7 +51,7 @@ namespace Predrag_Stojkovic_2021_0414
       }
       if (employee != null)
       {
-        var customersForm = new CustomersForm(_serverAdapter, employee.LibraryId);
+        var customersForm = new CustomersForm(_serverAdapter, employee.Library.Id);
         customersForm.Show();
         this.Hide();
       }

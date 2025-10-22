@@ -19,21 +19,16 @@ namespace Infrastructure.Persistence.Entities
         protected override string TableName => "book_copy";
 
         public override string UpdateQuery => $@"update {TableName}
-set library_id={LibraryId},
-book_id={BookId},
-borrower_id={BorrowerId},
-print_date={PrintDate}
-where id={Id}";
+set library_id='{LibraryId}',
+    book_id='{BookId}',
+    borrower_id={(BorrowerId == null ? "NULL" : $"'{BorrowerId}'")},
+    print_date='{PrintDate:yyyy-MM-dd HH:mm:ss}'
+where id='{Id}'";
 
         public override string InsertQuery => $@"insert into {TableName}
 (id, library_id, book_id, borrower_id, print_date)
-values ({Id}, {LibraryId}, {BookId}, {BorrowerId}, {PrintDate})";
+values ('{Id}', '{LibraryId}', '{BookId}', {(BorrowerId == null ? "NULL" : $"'{BorrowerId}'")}, '{PrintDate:yyyy-MM-dd HH:mm:ss}')";
 
-
-        public override BookCopy ToDomain()
-        {
-            return new BookCopy { PrintDate = PrintDate };
-        }
 
         public override void AssignFromReader(SqlDataReader reader)
         {

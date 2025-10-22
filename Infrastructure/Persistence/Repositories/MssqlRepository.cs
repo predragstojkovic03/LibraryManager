@@ -59,7 +59,7 @@ namespace Infrastructure.Persistence.Repositories
                 {
                     var persistence = new TPersistence();
                     persistence.AssignFromReader(reader);
-                    entities.Add(persistence.ToDomain());
+                    entities.Add(_mapper.ToDomain(persistence));
                 }
             }
             _dataSource.CloseConnection();
@@ -85,7 +85,7 @@ namespace Infrastructure.Persistence.Repositories
 
             _dataSource.CloseConnection();
             cmd.Dispose();
-            return helperEntity.ToDomain();
+            return _mapper.ToDomain(helperEntity);
         }
 
         public T Update(T entity)

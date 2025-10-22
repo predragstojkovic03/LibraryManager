@@ -19,22 +19,18 @@ namespace Infrastructure.Persistence.Entities
 
         protected override string TableName => "employee";
         public override string UpdateQuery => $@"update {TableName}
-set first_name={FirstName},
-last_name={LastName},
-password={Password},
-username={Username},
-library_id={LibraryId}
-where id={Id}";
+set first_name={(FirstName == null ? "NULL" : $"'{FirstName}'")},
+    last_name={(LastName == null ? "NULL" : $"'{LastName}'")},
+    password={(Password == null ? "NULL" : $"'{Password}'")},
+    username={(Username == null ? "NULL" : $"'{Username}'")},
+    library_id='{LibraryId}'
+where id='{Id}'";
 
         public override string InsertQuery => $@"insert into {TableName}
 (id, first_name, last_name, password, username, library_id)
-values ({Id}, {FirstName}, {LastName}, {Password}, {Username}, {LibraryId})";
+values ('{Id}', {(FirstName == null ? "NULL" : $"'{FirstName}'")}, {(LastName == null ? "NULL" : $"'{LastName}'")}, {(Password == null ? "NULL" : $"'{Password}'")}, {(Username == null ? "NULL" : $"'{Username}'")}, '{LibraryId}')";
 
 
-        public override Employee ToDomain()
-        {
-            return new Employee { FirstName = FirstName, LastName = LastName, Password = Password, Id = Id, Username = Username };
-        }
 
         public override void AssignFromReader(SqlDataReader reader)
         {
