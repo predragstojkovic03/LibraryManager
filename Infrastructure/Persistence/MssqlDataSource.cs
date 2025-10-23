@@ -9,8 +9,9 @@ namespace Infrastructure.Persistence
 {
     public class MssqlDataSource
     {
-        SqlConnection connection;
-        SqlTransaction transaction;
+        private SqlConnection connection;
+        public SqlConnection Connection => connection;
+        public SqlTransaction transaction;
 
         public MssqlDataSource()
         {

@@ -28,14 +28,17 @@ namespace Server
         private BookController _bookController;
         private BookCopyController _bookCopyController;
         private LibraryController _libraryController;
+        private LogController _logController;
 
         public Server()
         {
-            _employeeController = new EmployeeController(new CrudService<Employee>(new MssqlRepository<Employee, MssqlEmployee>(new MssqlDataSource(), new MssqlEmployeeMapper())));
-            _customerController = new CustomerController(new CrudService<Customer>(new MssqlRepository<Customer, MssqlCustomer>(new MssqlDataSource(), new MssqlCustomerMapper())));
-            _bookController = new BookController(new CrudService<Book>(new MssqlRepository<Book, MssqlBook>(new MssqlDataSource(), new MssqlBookMapper())));
-            _bookCopyController = new BookCopyController(new CrudService<BookCopy>(new MssqlRepository<BookCopy, MssqlBookCopy>(new MssqlDataSource(), new MssqlBookCopyMapper())));
-            _libraryController = new LibraryController(new CrudService<Library>(new MssqlRepository<Library, MssqlLibrary>(new MssqlDataSource(), new MssqlLibraryMapper())));
+            MssqlDataSource dataSource = new();
+            _employeeController = new EmployeeController(new CrudService<Employee>(new MssqlRepository<Employee, MssqlEmployee>(dataSource, new MssqlEmployeeMapper())));
+            _customerController = new CustomerController(new CrudService<Customer>(new MssqlRepository<Customer, MssqlCustomer>(dataSource, new MssqlCustomerMapper())));
+            _bookController = new BookController(new CrudService<Book>(new MssqlRepository<Book, MssqlBook>(dataSource, new MssqlBookMapper())));
+            _bookCopyController = new BookCopyController(new CrudService<BookCopy>(new MssqlRepository<BookCopy, MssqlBookCopy>(dataSource, new MssqlBookCopyMapper())));
+            _libraryController = new LibraryController(new CrudService<Library>(new MssqlRepository<Library, MssqlLibrary>(dataSource, new MssqlLibraryMapper())));
+            _logController = new LogController(new CrudService<Log>(new MssqlRepository<Log, MssqlLog>(dataSource, new MssqlLogMapper())));
         }
 
         public T GetController<T>() where T : class
@@ -45,6 +48,7 @@ namespace Server
             if (typeof(T) == typeof(BookController)) return _bookController as T;
             if (typeof(T) == typeof(BookCopyController)) return _bookCopyController as T;
             if (typeof(T) == typeof(LibraryController)) return _libraryController as T;
+            if (typeof(T) == typeof(LogController)) return _logController as T;
             throw new InvalidOperationException($"Controller of type {typeof(T).Name} not found.");
         }
 

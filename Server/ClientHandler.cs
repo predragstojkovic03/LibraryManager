@@ -48,6 +48,17 @@ namespace Server
         {
             switch (request.Operation)
             {
+                case Operation.LogCreate:
+                    {
+                        var controller = _server.GetController<LogController>();
+                        if (request.Payload == null)
+                            return new Response { Status = 1, Message = "Log data is missing or invalid." };
+                        var log = JsonSerializer.Deserialize<Log>(request.Payload.ToString());
+                        if (log == null)
+                            return new Response { Status = 1, Message = "Log data is missing or invalid." };
+                        var createdLog = controller.CreateLog(log);
+                        return new Response { Data = createdLog, Status = 0, Message = "Log saved successfully." };
+                    }
                 case Operation.AuthLogin:
                     {
                         var controller = _server.GetController<EmployeeController>();

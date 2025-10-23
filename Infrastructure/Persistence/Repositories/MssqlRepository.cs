@@ -22,22 +22,31 @@ namespace Infrastructure.Persistence.Repositories
             _mapper = mapper;
         }
 
-        public T Create(T entity)
+        public T Create(T entity, SqlTransaction transaction = null)
         {
             try
             {
                 var mssqlEntity = _mapper.ToPersistence(entity);
-                var cmd = _dataSource.CreateCommand(null);
-                _dataSource.OpenConnection();
+                var cmd = _dataSource.CreateCommand(transaction);
+                try
+                {
+                    if (transaction == null) _dataSource.OpenConnection();
+                }
+                catch { }
                 cmd.CommandText = mssqlEntity.InsertQuery;
                 cmd.ExecuteNonQuery();
-                _dataSource.CloseConnection();
+
+                try
+                {
+                    if (transaction == null) _dataSource.CloseConnection();
+                }
+                catch { }
 
                 return entity;
             }
             catch (SqlException ex)
             {
-                _dataSource.CloseConnection();
+                if (transaction == null) _dataSource.CloseConnection();
                 Console.WriteLine($"SQL Error {ex.Number}: {ex.Message}");
                 throw;
             }
@@ -51,7 +60,7 @@ namespace Infrastructure.Persistence.Repositories
                 var cmd = _dataSource.CreateCommand(null);
                 cmd.CommandText = mssqlEntity.DeleteQuery;
 
-                _dataSource.OpenConnection();
+                if (_dataSource.Connection.State == System.Data.ConnectionState.Closed) _dataSource.OpenConnection();
                 cmd.ExecuteNonQuery();
                 _dataSource.CloseConnection();
             }
@@ -72,7 +81,7 @@ namespace Infrastructure.Persistence.Repositories
                 List<T> entities = new();
                 cmd.CommandText = helperEntity.SelectQuery;
 
-                _dataSource.OpenConnection();
+                if (_dataSource.Connection.State == System.Data.ConnectionState.Closed) _dataSource.OpenConnection();
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -95,15 +104,15 @@ namespace Infrastructure.Persistence.Repositories
             }
         }
 
-        public T FindOne(Guid id)
+        public T FindOne(Guid id, SqlTransaction transaction = null)
         {
             try
             {
                 var helperEntity = new TPersistence() { Id = id };
-                var cmd = _dataSource.CreateCommand(null);
+                var cmd = _dataSource.CreateCommand(transaction);
                 cmd.CommandText = helperEntity.SelectOneQuery;
 
-                _dataSource.OpenConnection();
+                if (_dataSource.Connection.State == System.Data.ConnectionState.Closed) _dataSource.OpenConnection();
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     if (reader.Read())
@@ -112,24 +121,24 @@ namespace Infrastructure.Persistence.Repositories
                     }
                 }
 
-                _dataSource.CloseConnection();
+                if (transaction == null) _dataSource.CloseConnection();
                 cmd.Dispose();
                 return _mapper.ToDomain(helperEntity);
             }
             catch (SqlException ex)
             {
-                _dataSource.CloseConnection();
+                if (transaction == null) _dataSource.CloseConnection();
                 Console.WriteLine($"SQL Error {ex.Number}: {ex.Message}");
                 throw;
             }
         }
 
-        public T Update(T entity)
+        public T Update(T entity, SqlTransaction transaction = null)
         {
             try
             {
                 // Check if entity exists
-                var existing = FindOne(entity.Id);
+                var existing = FindOne(entity.Id, transaction);
                 if (existing == null)
                 {
                     throw new EntityNotFoundException($"Entity with id {entity.Id} not found.");
@@ -138,18 +147,18 @@ namespace Infrastructure.Persistence.Repositories
                 // Merge properties for partial update
                 var mergedEntity = MergeEntities(existing, entity);
                 var mssqlEntity = _mapper.ToPersistence(mergedEntity);
-                var cmd = _dataSource.CreateCommand(null);
+                var cmd = _dataSource.CreateCommand(transaction);
                 cmd.CommandText = mssqlEntity.UpdateQuery;
 
-                _dataSource.OpenConnection();
+                if (transaction == null && _dataSource.Connection.State == System.Data.ConnectionState.Closed) _dataSource.OpenConnection();
                 cmd.ExecuteNonQuery();
-                _dataSource.CloseConnection();
+                if (transaction == null) _dataSource.CloseConnection();
 
                 return mergedEntity;
             }
             catch (SqlException ex)
             {
-                _dataSource.CloseConnection();
+                if (transaction == null) _dataSource.CloseConnection();
                 Console.WriteLine($"SQL Error {ex.Number}: {ex.Message}");
                 throw;
             }

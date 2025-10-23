@@ -29,5 +29,6 @@
         LibrariesCreate,
         LibrariesUpdate,
         LibrariesDelete,
+        LogCreate
     }
 }

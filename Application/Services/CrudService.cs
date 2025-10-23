@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Microsoft.Data.SqlClient;
+using Domain.Entities;
 using Domain.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -27,14 +28,14 @@ namespace Application.Services
             return _repository.FindAll();
         }
 
-        public T Create(T entity)
+        public T Create(T entity, SqlTransaction transaction = null)
         {
-            return _repository.Create(entity);
+            return _repository.Create(entity, transaction);
         }
 
-        public T Update(T entity)
+        public T Update(T entity, SqlTransaction transaction = null)
         {
-            return _repository.Update(entity);
+            return _repository.Update(entity, transaction);
         }
     }
 }

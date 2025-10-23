@@ -2,11 +2,12 @@
 {
     internal class Program
     {
+        public static Server ServerInstance;
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
-            Server server = new();
-            server.Listen(3000);
+            ServerInstance = new Server();
+            ServerInstance.Listen(3000);
         }
     }
 }
